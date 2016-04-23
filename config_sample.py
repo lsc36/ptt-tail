@@ -6,5 +6,15 @@ user = 'obov'
 passwd = 'sowsowqq'
 
 # User-defined hooks to process pushes
-# Args: (time, type, user, msg)
-hooks = []
+# Call example: for hook in hooks[board][aid]: hook(time, type, user, msg)
+# Use '*' for wildcard board/aid
+def hello(a, b, c, d):
+    print 'Hello', c
+
+hooks = {
+        '*': {
+            '*': [
+                hello,
+                ]
+            }
+        }
