@@ -61,7 +61,7 @@ class Ptt(object):
         self.set_board(board)
         last = self.get_last_page(aid)
         for l in last:
-            yield Ptt.push_format(l)
+            yield Ptt.push_format(l) + (False,)  # Not follow
         while True:
             try:
                 time.sleep(poll_interval)
@@ -73,7 +73,7 @@ class Ptt(object):
                         break
                     pos -= 1
                 for l in cur[pos:]:
-                    yield Ptt.push_format(l)
+                    yield Ptt.push_format(l) + (True,)  # Follow
                 last = cur
             except KeyboardInterrupt:
                 break

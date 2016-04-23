@@ -11,12 +11,15 @@ def main():
     parser.add_argument('aid', help='AID of the article (remember to escape "#")')
     args = parser.parse_args()
     ptt = Ptt(config.user, config.passwd)
-    for time, push_type, user, msg in ptt.tail(args.board, args.aid):
+    for time, push_type, user, msg, follow in ptt.tail(args.board, args.aid):
         if time is None:
             # Error parsing, print raw
             print msg
         else:
             print '%s %s %s: %s' % (time, push_type, user, msg)
+        # Run hooks on followed pushes only
+        if not follow:
+            continue
         for hook in (
                 config.hooks.get('*', {}).get('*', []) +
                 config.hooks.get('*', {}).get(args.aid, []) +
