@@ -81,7 +81,7 @@ class Ptt(object):
     @staticmethod
     def push_format(s_orig):
         s = Ptt.noctrl(s_orig)
-        m = re.match(r'^([^ ]+) ([\w]+): (.*) (\d\d/\d\d \d\d:\d\d)$', s.strip())
+        m = re.match(r'^([^ ]+) ([\w]+) *: (.*) (\d\d/\d\d \d\d:\d\d)$', s.strip())
         if m is None:
             log.warn('Error parsing push: ' + repr(s_orig))
             return None, None, None, s
