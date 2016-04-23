@@ -84,7 +84,7 @@ class Ptt(object):
         m = re.match(r'^([^ ]+) ([\w]+): (.*) (\d\d/\d\d \d\d:\d\d)$', s.strip())
         if m is None:
             log.warn('Error parsing push: ' + repr(s_orig))
-            return s
+            return None, None, None, s
         push_type = m.group(1)
         # Replace Unicode arrow with ASCII chars (weird width on terminal)
         if push_type == '\x08\x08→':
