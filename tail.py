@@ -11,7 +11,8 @@ def main():
     parser.add_argument('aid', help='AID of the article (remember to escape "#")')
     args = parser.parse_args()
     ptt = Ptt(config.user, config.passwd)
-    ptt.tail(args.board, args.aid)
+    for time, push_type, user, msg in ptt.tail(args.board, args.aid):
+        print '%s %s %s: %s' % (time, push_type, user, msg)
 
 
 if __name__ == '__main__':

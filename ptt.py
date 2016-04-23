@@ -61,7 +61,7 @@ class Ptt(object):
         self.set_board(board)
         last = self.get_last_page(aid)
         for l in last:
-            print Ptt.push_format(l)
+            yield Ptt.push_format(l)
         while True:
             try:
                 time.sleep(poll_interval)
@@ -73,7 +73,7 @@ class Ptt(object):
                         break
                     pos -= 1
                 for l in cur[pos:]:
-                    print Ptt.push_format(l)
+                    yield Ptt.push_format(l)
                 last = cur
             except KeyboardInterrupt:
                 break
@@ -89,7 +89,7 @@ class Ptt(object):
         # Replace Unicode arrow with ASCII chars (weird width on terminal)
         if push_type == '\x08\x08→':
             push_type = '->'
-        return '%s %s %s: %s' % (m.group(4), push_type, m.group(2), m.group(3))
+        return m.group(4), push_type, m.group(2), m.group(3)
 
     @staticmethod
     def noctrl(s):
