@@ -13,6 +13,8 @@ def main():
     ptt = Ptt(config.user, config.passwd)
     for time, push_type, user, msg in ptt.tail(args.board, args.aid):
         print '%s %s %s: %s' % (time, push_type, user, msg)
+        for hook in config.hooks:
+            hook(time, push_type, user, msg)
 
 
 if __name__ == '__main__':

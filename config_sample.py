@@ -4,3 +4,7 @@
 
 user = 'obov'
 passwd = 'sowsowqq'
+
+# User-defined hooks to process pushes
+# Args: (time, type, user, msg)
+hooks = []
