@@ -103,4 +103,4 @@ class Ptt(object):
     @staticmethod
     def noctrl(s):
         # Remove terminal control chars
-        return re.sub('\033\\[[\\d;]*[mHK]', '', s)
+        return re.sub('\033\\[[\\d;]*[mHJK]', '', s)
