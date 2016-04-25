@@ -32,40 +32,49 @@ class Ptt(object):
         p.recvrepeat(0.1)
         prog.success('Done')
 
-    def get_last_page(self, aid):
+    def set_article(self, aid):
+        prog = log.progress('Going to article "%s"...' % aid)
         p = self.p
         p.sendline(aid + '\r')
         p.recvrepeat(0.1)
-        p.sendline('\r')  # Enter article
+        p.send('r')  # Enter article
         p.recvrepeat(0.1)
+        prog.success('Done')
+
+    def reload_article(self):
+        p = self.p
+        p.send('q')
+        p.recvrepeat(0.1)
+        p.send('r')
+        p.recvrepeat(0.1)
+
+    def get_last_page(self):
+        p = self.p
         p.send('$')  # End
         p.recvrepeat(0.1)
 
-        # Receive pushes line by line to prevent weird control chars
-        p.send('\033[5~')  # PgUp
-        p.recvrepeat(0.1)
-
-        lines = []
         while True:
-            p.send('\033[B')  # Down
-            s = p.recvrepeat(0.1)
-            l = s.split('\r\n')
-            for ll in l[:-1]:
-                lines.append(ll)
-            if l[-1].find('100%') != -1:
-                p.send('q')
+            p.send('\x0c')  # Ctrl-L re-render screen
+            lines = p.recvrepeat(0.1).split('\r\n')[:-1]
+            if lines:
                 break
+            log.warn('Re-render failed, retrying')
+
+        lines = map(Ptt.noctrl, lines)
+        lines = map(lambda l: l.strip(), lines)
         return lines
 
     def tail(self, board, aid, poll_interval=5):
         self.set_board(board)
-        last = self.get_last_page(aid)
+        self.set_article(aid)
+        last = self.get_last_page()
         for l in last:
             yield Ptt.push_format(l) + (False,)  # Not follow
         while True:
             try:
                 time.sleep(poll_interval)
-                cur = self.get_last_page(aid)
+                self.reload_article()
+                cur = self.get_last_page()
                 # Find new pushes
                 pos = len(cur)
                 while pos > 0:
