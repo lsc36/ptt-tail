@@ -102,6 +102,8 @@ class Ptt(object):
                     if last[-1] == cur[pos - 1]:
                         break
                     pos -= 1
+                if pos == 0:
+                    log.warn('New pushes more than 1 page, some may be lost')
                 for l in cur[pos:]:
                     yield Ptt.push_format(l) + (True,)  # Follow
                 last = cur
