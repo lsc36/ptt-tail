@@ -22,8 +22,15 @@ class Ptt(object):
         p.recvrepeat(0.1)
         prog.success('Done')
         self.p = p
+        self._board = None
+        self._article = None
 
-    def set_board(self, board):
+    @property
+    def board(self):
+        return self._board
+
+    @board.setter
+    def board(self, board):
         prog = log.progress('Going to board "%s"...' % board)
         p = self.p
         p.sendline('s' + board + '\r')
@@ -31,8 +38,17 @@ class Ptt(object):
         p.send(' ')  # Skip banner or do nothing
         p.recvrepeat(0.1)
         prog.success('Done')
+        self._board = board
+        self._article = None
 
-    def set_article(self, aid):
+    @property
+    def article(self):
+        return self._article
+
+    @article.setter
+    def article(self, aid):
+        if self._board is None:
+            raise ValueError('Board not set')
         prog = log.progress('Going to article "%s"...' % aid)
         p = self.p
         p.sendline(aid + '\r')
@@ -40,8 +56,11 @@ class Ptt(object):
         p.send('r')  # Enter article
         p.recvrepeat(0.1)
         prog.success('Done')
+        self._article = aid
 
     def reload_article(self):
+        if self._article is None:
+            raise ValueError('Article not set')
         p = self.p
         p.send('q')
         p.recvrepeat(0.1)
@@ -49,6 +68,8 @@ class Ptt(object):
         p.recvrepeat(0.1)
 
     def get_last_page(self):
+        if self._article is None:
+            raise ValueError('Article not set')
         p = self.p
         p.send('$')  # End
         p.recvrepeat(0.1)
@@ -65,8 +86,8 @@ class Ptt(object):
         return lines
 
     def tail(self, board, aid, poll_interval=5):
-        self.set_board(board)
-        self.set_article(aid)
+        self.board = board
+        self.article = aid
         last = self.get_last_page()
         for l in last:
             yield Ptt.push_format(l) + (False,)  # Not follow
